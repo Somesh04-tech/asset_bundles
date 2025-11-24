@@ -1,0 +1,54 @@
+# This is a Databricks asset bundle definition for asset_bundles.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+bundle:
+  name: asset_bundles
+
+include:
+  - resources/*.yml
+
+targets:
+  stage:
+    # The default target uses 'mode: development' to create a development copy.
+    # - Deployed resources get prefixed with '[dev my_user_name]'
+    # - Any job schedules and triggers are paused by default.
+    # See also https://docs.databricks.com/dev-tools/bundles/deployment-modes.html.
+    mode: production
+    workspace:
+      host: https://adb-8986016738799514.14.azuredatabricks.net
+      root_path: /Workspace/Nirvana/asset_bundles/.bundle/${bundle.name}/${bundle.target}
+    run_as: 
+      service_principal_name: d33aa8a4-7bae-481d-9913-3a97fbc9e78d
+    permissions:
+      - group_name: Level2
+        level: CAN_MANAGE
+      - group_name: Monitors
+        level: CAN_MANAGE
+
+  dev:
+    # The default target uses 'mode: development' to create a development copy.
+    # - Deployed resources get prefixed with '[dev my_user_name]'
+    # - Any job schedules and triggers are paused by default.
+    # See also https://docs.databricks.com/dev-tools/bundles/deployment-modes.html.
+    mode: development
+    default: true
+    workspace:
+      host: https://adb-8986016738799514.14.azuredatabricks.net
+      root_path: /Workspace/Users/${workspace.current_user.userName}/asset_bundles/.bundle/${bundle.name}/${bundle.target}
+    run_as: 
+      user_name: ${workspace.current_user.userName}
+
+  PROD:
+    mode: production
+    workspace:
+      host: https://adb-330907812595043.3.azuredatabricks.net/
+      # We explicitly deploy to /Workspace/Nirvana/ to make sure we only have a single copy.
+      root_path: /Workspace/Nirvana/asset_bundles/.bundle/${bundle.name}/${bundle.target}
+    permissions:
+      - service_principal_name: d33aa8a4-7bae-481d-9913-3a97fbc9e78d
+        level: CAN_MANAGE
+      - group_name: Level2
+        level: CAN_MANAGE
+      - group_name: Monitors
+        level: CAN_MANAGE
+    run_as: 
+      service_principal_name: d33aa8a4-7bae-481d-9913-3a97fbc9e78d
